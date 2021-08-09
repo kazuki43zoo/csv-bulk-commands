@@ -1,5 +1,33 @@
 # csv-bulk-commands
 
+Bulk operation utilities for csv file.
+
+## Features
+
+Support following features.
+
+* Adding columns at the end
+* Deleting columns
+* Updating columns by specified expression(fixed value or dynamic value)
+* Ordering columns by specified order
+
+## Support CSV file specifications
+
+* The first line is header
+* The Record separator is LF or CRLF (Writing separator is OS dependent character)
+* No support an enclosing character (no support include a comma and record separator in column value)
+* The default encoding is UTF-8 (can change an any encoding using command line argument)
+
+> **NOTE:**
+> 
+> Will have a plan to supporting various csv format at future.
+
+## How to specify target files
+
+Search files that matches conditions specified by `--dir` and `--files`.
+
+* You need to specify a base directory using the `--dir`
+* You need to specify a target file using the `--files`
 
 ## How to run
 
