@@ -6,6 +6,7 @@ import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -25,9 +26,9 @@ public class AddingColumnProcessor {
 
   private static final Logger logger = LoggerFactory.getLogger(AddingColumnProcessor.class);
 
-  void execute(List<String> columnNames, List<String> columnValues, Path file) {
+  void execute(List<String> columnNames, List<String> columnValues, Path file, Charset encoding) {
     try {
-      List<String> lines = Files.readAllLines(file, StandardCharsets.UTF_8);
+      List<String> lines = Files.readAllLines(file, encoding);
       if (lines.isEmpty()) {
         logger.warn("Skip adding because file is empty. file:{}", file);
         return;
@@ -55,7 +56,7 @@ public class AddingColumnProcessor {
         saveLines.add(StringUtils.collectionToCommaDelimitedString(valueColumns));
       }
 
-      Files.write(file, saveLines, StandardCharsets.UTF_8);
+      Files.write(file, saveLines, encoding);
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }

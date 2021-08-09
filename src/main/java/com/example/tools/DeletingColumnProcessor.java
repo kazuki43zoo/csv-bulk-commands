@@ -6,6 +6,7 @@ import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -25,9 +26,9 @@ public class DeletingColumnProcessor {
     // NOP
   }
 
-  void execute(List<String> columnNames, Path file) {
+  void execute(List<String> columnNames, Path file, Charset encoding) {
     try {
-      List<String> lines = Files.readAllLines(file, StandardCharsets.UTF_8);
+      List<String> lines = Files.readAllLines(file, encoding);
       if (lines.isEmpty()) {
         logger.warn("Skip deleting because file is empty. file:{}", file);
         return;
@@ -57,7 +58,7 @@ public class DeletingColumnProcessor {
         saveLines.add(StringUtils.collectionToCommaDelimitedString(validColumnValues));
       }
 
-      Files.write(file, saveLines, StandardCharsets.UTF_8);
+      Files.write(file, saveLines, encoding);
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }

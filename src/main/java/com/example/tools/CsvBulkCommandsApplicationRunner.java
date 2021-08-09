@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -26,12 +28,13 @@ public class CsvBulkCommandsApplicationRunner implements ApplicationRunner {
   public void run(ApplicationArguments args) throws IOException {
     if (args.getSourceArgs().length == 0 || args.containsOption("h") || args.containsOption("help")) {
       helpLogger.info("");
-      helpLogger.info("[Option]");
+      helpLogger.info("[Arguments]");
       helpLogger.info("  --command       : adding-columns, deleting-columns, setting-columns, ordering-columns");
       helpLogger.info("  --dir           : target directory for apply command");
       helpLogger.info("  --files         : target files for apply command");
       helpLogger.info("  --column-names  : list of column name");
       helpLogger.info("  --column-values : list of column value");
+      helpLogger.info("  --encoding      : encoding for read/write file (default: UTF-8)");
       helpLogger.info("  --h (--help)    : print help");
       helpLogger.info("");
       helpLogger.info("[Usage: adding-columns]");
@@ -119,30 +122,32 @@ public class CsvBulkCommandsApplicationRunner implements ApplicationRunner {
         args.getOptionValues("column-values").stream().flatMap(x -> Stream.of(StringUtils.commaDelimitedListToStringArray(x))).collect(Collectors.toList()) :
         Collections.emptyList();
 
-    logger.info("Start. command:{} dir:{} files:{} column-names:{} column-values:{}", command, dir, files, columnNames, columnValues);
+    Charset encoding = Charset.forName(args.getOptionValues("dir").stream().findFirst().orElse(StandardCharsets.UTF_8.name()));
+
+    logger.info("Start. command:{} dir:{} files:{} column-names:{} column-values:{} encoding:{}", command, dir, files, columnNames, columnValues, encoding);
 
     Files.walk(Paths.get(dir))
         .filter(Files::isRegularFile)
-        .filter(file -> files.stream().anyMatch(x -> file.toString().endsWith(x)))
-        .sorted().forEach(file -> execute(command, columnNames, columnValues, file));
+        .filter(file -> files.stream().anyMatch(x -> file.toString().replace('\\', '/').endsWith(x)))
+        .sorted().forEach(file -> execute(command, columnNames, columnValues, file, encoding));
 
     logger.info("End.");
   }
 
-  private void execute(String command, List<String> columnNames, List<String> columnValues, Path file) {
+  private void execute(String command, List<String> columnNames, List<String> columnValues, Path file, Charset encoding) {
     logger.info("processing file:{}", file);
     switch (command) {
       case "adding-columns":
-        AddingColumnProcessor.INSTANCE.execute(columnNames, columnValues, file);
+        AddingColumnProcessor.INSTANCE.execute(columnNames, columnValues, file, encoding);
         break;
       case "deleting-columns":
-        DeletingColumnProcessor.INSTANCE.execute(columnNames, file);
+        DeletingColumnProcessor.INSTANCE.execute(columnNames, file, encoding);
         break;
       case "setting-columns":
-        SettingColumnProcessor.INSTANCE.execute(columnNames, columnValues, file);
+        SettingColumnProcessor.INSTANCE.execute(columnNames, columnValues, file, encoding);
         break;
       case "ordering-columns":
-        OrderingColumnProcessor.INSTANCE.execute(columnNames, file);
+        OrderingColumnProcessor.INSTANCE.execute(columnNames, file, encoding);
         break;
       default:
         throw new UnsupportedOperationException(String.format("'%s' command not support. valid-commands:%s", command, "[adding-columns, deleting-columns, setting-columns, ordering-columns]"));
