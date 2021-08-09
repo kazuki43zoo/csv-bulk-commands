@@ -63,7 +63,7 @@
 2021-08-09 10:45:05.585  INFO 2798 --- [           main] HELP                                     : 
 2021-08-09 10:45:05.585  INFO 2798 --- [           main] HELP                                     : [Usage: adding-columns]
 2021-08-09 10:45:05.587  INFO 2798 --- [           main] HELP                                     :   Adding specified new column using column-names and column-values.
-2021-08-09 10:45:05.587  INFO 2798 --- [           main] HELP                                     :   e.g.) --command=adding-columns --dir=src/test/resources/data --files=xxx.csv,yyy.csv --column-names=item10,item11 --column-values=1,NULL
+2021-08-09 10:45:05.587  INFO 2798 --- [           main] HELP                                     :   e.g.) --command=adding-columns --dir=src/test/resources/data --files=xxx.csv,yyy.csv --column-names=item10,item11 --column-values=1,'NULL'
 2021-08-09 10:45:05.587  INFO 2798 --- [           main] HELP                                     :   ------------------------
 2021-08-09 10:45:05.587  INFO 2798 --- [           main] HELP                                     :   item1,item2
 2021-08-09 10:45:05.589  INFO 2798 --- [           main] HELP                                     :   001,test
@@ -89,7 +89,7 @@
 2021-08-09 10:45:05.615  INFO 2798 --- [           main] HELP                                     : 
 2021-08-09 10:45:05.615  INFO 2798 --- [           main] HELP                                     : [Usage: updating-columns]
 2021-08-09 10:45:05.615  INFO 2798 --- [           main] HELP                                     :   Updating value specified existing column using column-names and column-values.
-2021-08-09 10:45:05.615  INFO 2798 --- [           main] HELP                                     :   e.g.) --command=updating-columns --dir=src/test/resources/data --files=xxx.csv,yyy.csv --column-names=item2,item9 --column-values=test2,NULL
+2021-08-09 10:45:05.615  INFO 2798 --- [           main] HELP                                     :   e.g.) --command=updating-columns --dir=src/test/resources/data --files=xxx.csv,yyy.csv --column-names=item2,item9 --column-values='test2','NULL'
 2021-08-09 10:45:05.619  INFO 2798 --- [           main] HELP                                     :   ------------------------
 2021-08-09 10:45:05.619  INFO 2798 --- [           main] HELP                                     :   item1,item2,item8,item9
 2021-08-09 10:45:05.619  INFO 2798 --- [           main] HELP                                     :   001,test,1,foo
