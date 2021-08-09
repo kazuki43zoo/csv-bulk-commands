@@ -15,13 +15,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SettingColumnProcessor {
+public class UpdatingColumnProcessor {
 
-  private static final Logger logger = LoggerFactory.getLogger(SettingColumnProcessor.class);
+  private static final Logger logger = LoggerFactory.getLogger(UpdatingColumnProcessor.class);
 
-  static final SettingColumnProcessor INSTANCE = new SettingColumnProcessor();
+  static final UpdatingColumnProcessor INSTANCE = new UpdatingColumnProcessor();
 
-  private SettingColumnProcessor() {
+  private UpdatingColumnProcessor() {
     // NOP
   }
 

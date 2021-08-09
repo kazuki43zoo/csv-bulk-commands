@@ -29,7 +29,7 @@ public class CsvBulkCommandsApplicationRunner implements ApplicationRunner {
     if (args.getSourceArgs().length == 0 || args.containsOption("h") || args.containsOption("help")) {
       helpLogger.info("");
       helpLogger.info("[Arguments]");
-      helpLogger.info("  --command       : adding-columns, deleting-columns, setting-columns, ordering-columns");
+      helpLogger.info("  --command       : adding-columns, deleting-columns, updating-columns, ordering-columns");
       helpLogger.info("  --dir           : target directory for apply command");
       helpLogger.info("  --files         : target files for apply command");
       helpLogger.info("  --column-names  : list of column name");
@@ -52,7 +52,7 @@ public class CsvBulkCommandsApplicationRunner implements ApplicationRunner {
       helpLogger.info("");
       helpLogger.info("[Usage: deleting-columns]");
       helpLogger.info("  Deleting specified existing column using column-names.");
-      helpLogger.info("  e.g.) --command=adding-columns --dir=src/test/resources/data --files=xxx.csv,yyy.csv --column-names=item2,item9");
+      helpLogger.info("  e.g.) --command=deleting-columns --dir=src/test/resources/data --files=xxx.csv,yyy.csv --column-names=item2,item9");
       helpLogger.info("  ------------------------");
       helpLogger.info("  item1,item2,item8,item9");
       helpLogger.info("  001,test,1,foo");
@@ -63,9 +63,9 @@ public class CsvBulkCommandsApplicationRunner implements ApplicationRunner {
       helpLogger.info("  001,1");
       helpLogger.info("  ------------------------");
       helpLogger.info("");
-      helpLogger.info("[Usage: setting-columns]");
-      helpLogger.info("  Setting(Overriding) value specified existing column using column-names and column-values.");
-      helpLogger.info("  e.g.) --command=adding-columns --dir=src/test/resources/data --files=xxx.csv,yyy.csv --column-names=item2,item9 --column-values=test2,NULL");
+      helpLogger.info("[Usage: updating-columns]");
+      helpLogger.info("  Updating value specified existing column using column-names and column-values.");
+      helpLogger.info("  e.g.) --command=updating-columns --dir=src/test/resources/data --files=xxx.csv,yyy.csv --column-names=item2,item9 --column-values=test2,NULL");
       helpLogger.info("  ------------------------");
       helpLogger.info("  item1,item2,item8,item9");
       helpLogger.info("  001,test,1,foo");
@@ -78,7 +78,7 @@ public class CsvBulkCommandsApplicationRunner implements ApplicationRunner {
       helpLogger.info("");
       helpLogger.info("[Usage: ordering-columns]");
       helpLogger.info("  Ordering column specified order using column-names.");
-      helpLogger.info("  e.g.) --command=adding-columns --dir=src/test/resources/data --files=xxx.csv,yyy.csv --column-names=item9,item8,item2,item1");
+      helpLogger.info("  e.g.) --command=ordering-columns --dir=src/test/resources/data --files=xxx.csv,yyy.csv --column-names=item9,item8,item2,item1");
       helpLogger.info("  ------------------------");
       helpLogger.info("  item1,item2,item8,item9");
       helpLogger.info("  001,test,1,foo");
@@ -94,9 +94,9 @@ public class CsvBulkCommandsApplicationRunner implements ApplicationRunner {
     String command;
     if (args.containsOption("command")) {
       command = args.getOptionValues("command").stream().findFirst()
-          .orElseThrow(() -> new IllegalArgumentException("'command' value is required. valid-commands:[adding-columns, deleting-columns, setting-columns, ordering-columns]"));
+          .orElseThrow(() -> new IllegalArgumentException("'command' value is required. valid-commands:[adding-columns, deleting-columns, updating-columns, ordering-columns]"));
     } else {
-      throw new IllegalArgumentException("'command' is required. valid-commands:[adding-columns, deleting-columns, setting-columns, ordering-columns]");
+      throw new IllegalArgumentException("'command' is required. valid-commands:[adding-columns, deleting-columns, updating-columns, ordering-columns]");
     }
 
     String dir;
@@ -143,14 +143,14 @@ public class CsvBulkCommandsApplicationRunner implements ApplicationRunner {
       case "deleting-columns":
         DeletingColumnProcessor.INSTANCE.execute(columnNames, file, encoding);
         break;
-      case "setting-columns":
-        SettingColumnProcessor.INSTANCE.execute(columnNames, columnValues, file, encoding);
+      case "updating-columns":
+        UpdatingColumnProcessor.INSTANCE.execute(columnNames, columnValues, file, encoding);
         break;
       case "ordering-columns":
         OrderingColumnProcessor.INSTANCE.execute(columnNames, file, encoding);
         break;
       default:
-        throw new UnsupportedOperationException(String.format("'%s' command not support. valid-commands:%s", command, "[adding-columns, deleting-columns, setting-columns, ordering-columns]"));
+        throw new UnsupportedOperationException(String.format("'%s' command not support. valid-commands:%s", command, "[adding-columns, deleting-columns, updating-columns, ordering-columns]"));
     }
   }
 
