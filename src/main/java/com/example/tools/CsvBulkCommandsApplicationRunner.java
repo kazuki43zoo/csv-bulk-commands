@@ -122,7 +122,9 @@ public class CsvBulkCommandsApplicationRunner implements ApplicationRunner {
         args.getOptionValues("column-values").stream().flatMap(x -> Stream.of(StringUtils.commaDelimitedListToStringArray(x))).collect(Collectors.toList()) :
         Collections.emptyList();
 
-    Charset encoding = Charset.forName(args.getOptionValues("encoding").stream().findFirst().orElse(StandardCharsets.UTF_8.name()));
+    Charset encoding = args.containsOption("encoding") ?
+        Charset.forName(args.getOptionValues("encoding").stream().findFirst().orElse(StandardCharsets.UTF_8.name())) :
+        StandardCharsets.UTF_8;
 
     logger.info("Start. command:{} dir:{} files:{} column-names:{} column-values:{} encoding:{}", command, dir, files, columnNames, columnValues, encoding);
 
