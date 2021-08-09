@@ -27,7 +27,7 @@ Support following features.
 Search files that matches conditions specified by `--dir` and `--files`.
 
 * You need to specify a base directory using the `--dir`
-* You need to specify a target file using the `--files`
+* You need to specify a target file path suffix using the `--files`
 
 ## How to run
 
