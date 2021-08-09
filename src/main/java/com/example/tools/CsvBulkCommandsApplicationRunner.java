@@ -21,74 +21,74 @@ import java.util.stream.Stream;
 @Component
 public class CsvBulkCommandsApplicationRunner implements ApplicationRunner {
 
-  private static final Logger logger = LoggerFactory.getLogger(CsvBulkCommandsApplicationRunner.class);
-  private static final Logger helpLogger = LoggerFactory.getLogger("HELP");
+  private static final Logger LOGGER = LoggerFactory.getLogger(CsvBulkCommandsApplicationRunner.class);
+  private static final Logger HELP_LOGGER = LoggerFactory.getLogger("HELP");
 
   @Override
   public void run(ApplicationArguments args) throws IOException {
     if (args.getSourceArgs().length == 0 || args.containsOption("h") || args.containsOption("help")) {
-      helpLogger.info("");
-      helpLogger.info("[Arguments]");
-      helpLogger.info("  --command       : adding-columns, deleting-columns, updating-columns, ordering-columns");
-      helpLogger.info("  --dir           : target directory for apply command");
-      helpLogger.info("  --files         : target files for apply command");
-      helpLogger.info("  --column-names  : list of column name");
-      helpLogger.info("  --column-values : list of column value");
-      helpLogger.info("  --encoding      : encoding for read/write file (default: UTF-8)");
-      helpLogger.info("  --h (--help)    : print help");
-      helpLogger.info("");
-      helpLogger.info("[Usage: adding-columns]");
-      helpLogger.info("  Adding specified new column using column-names and column-values.");
-      helpLogger.info("  e.g.) --command=adding-columns --dir=src/test/resources/data --files=xxx.csv,yyy.csv --column-names=item10,item11 --column-values=1,NULL");
-      helpLogger.info("  ------------------------");
-      helpLogger.info("  item1,item2");
-      helpLogger.info("  001,test");
-      helpLogger.info("  ------------------------");
-      helpLogger.info("    ↓");
-      helpLogger.info("  ------------------------");
-      helpLogger.info("  item1,item2,item10,item11");
-      helpLogger.info("  001,test,1,NULL");
-      helpLogger.info("  ------------------------");
-      helpLogger.info("");
-      helpLogger.info("[Usage: deleting-columns]");
-      helpLogger.info("  Deleting specified existing column using column-names.");
-      helpLogger.info("  e.g.) --command=deleting-columns --dir=src/test/resources/data --files=xxx.csv,yyy.csv --column-names=item2,item9");
-      helpLogger.info("  ------------------------");
-      helpLogger.info("  item1,item2,item8,item9");
-      helpLogger.info("  001,test,1,foo");
-      helpLogger.info("  ------------------------");
-      helpLogger.info("    ↓");
-      helpLogger.info("  ------------------------");
-      helpLogger.info("  item1,item8");
-      helpLogger.info("  001,1");
-      helpLogger.info("  ------------------------");
-      helpLogger.info("");
-      helpLogger.info("[Usage: updating-columns]");
-      helpLogger.info("  Updating value specified existing column using column-names and column-values.");
-      helpLogger.info("  e.g.) --command=updating-columns --dir=src/test/resources/data --files=xxx.csv,yyy.csv --column-names=item2,item9 --column-values=test2,NULL");
-      helpLogger.info("  ------------------------");
-      helpLogger.info("  item1,item2,item8,item9");
-      helpLogger.info("  001,test,1,foo");
-      helpLogger.info("  ------------------------");
-      helpLogger.info("    ↓");
-      helpLogger.info("  ------------------------");
-      helpLogger.info("  item1,item2,item8,item9");
-      helpLogger.info("  001,test2,1,NULL");
-      helpLogger.info("  ------------------------");
-      helpLogger.info("");
-      helpLogger.info("[Usage: ordering-columns]");
-      helpLogger.info("  Ordering column specified order using column-names.");
-      helpLogger.info("  e.g.) --command=ordering-columns --dir=src/test/resources/data --files=xxx.csv,yyy.csv --column-names=item9,item8,item2,item1");
-      helpLogger.info("  ------------------------");
-      helpLogger.info("  item1,item2,item8,item9");
-      helpLogger.info("  001,test,1,foo");
-      helpLogger.info("  ------------------------");
-      helpLogger.info("    ↓");
-      helpLogger.info("  ------------------------");
-      helpLogger.info("  item9,item8,item2,item1");
-      helpLogger.info("  foo,1,test,001");
-      helpLogger.info("  ------------------------");
-      helpLogger.info("");
+      HELP_LOGGER.info("");
+      HELP_LOGGER.info("[Arguments]");
+      HELP_LOGGER.info("  --command       : adding-columns, deleting-columns, updating-columns, ordering-columns");
+      HELP_LOGGER.info("  --dir           : target directory for apply command");
+      HELP_LOGGER.info("  --files         : target files for apply command");
+      HELP_LOGGER.info("  --column-names  : list of column name");
+      HELP_LOGGER.info("  --column-values : list of column value(can reference other column values using SpEL expression)");
+      HELP_LOGGER.info("  --encoding      : encoding for read/write file (default: UTF-8)");
+      HELP_LOGGER.info("  --h (--help)    : print help");
+      HELP_LOGGER.info("");
+      HELP_LOGGER.info("[Usage: adding-columns]");
+      HELP_LOGGER.info("  Adding specified new column using column-names and column-values.");
+      HELP_LOGGER.info("  e.g.) --command=adding-columns --dir=src/test/resources/data --files=xxx.csv,yyy.csv --column-names=item10,item11 --column-values=1,'NULL'");
+      HELP_LOGGER.info("  ------------------------");
+      HELP_LOGGER.info("  item1,item2");
+      HELP_LOGGER.info("  001,test");
+      HELP_LOGGER.info("  ------------------------");
+      HELP_LOGGER.info("    ↓");
+      HELP_LOGGER.info("  ------------------------");
+      HELP_LOGGER.info("  item1,item2,item10,item11");
+      HELP_LOGGER.info("  001,test,1,NULL");
+      HELP_LOGGER.info("  ------------------------");
+      HELP_LOGGER.info("");
+      HELP_LOGGER.info("[Usage: deleting-columns]");
+      HELP_LOGGER.info("  Deleting specified existing column using column-names.");
+      HELP_LOGGER.info("  e.g.) --command=deleting-columns --dir=src/test/resources/data --files=xxx.csv,yyy.csv --column-names=item2,item9");
+      HELP_LOGGER.info("  ------------------------");
+      HELP_LOGGER.info("  item1,item2,item8,item9");
+      HELP_LOGGER.info("  001,test,1,foo");
+      HELP_LOGGER.info("  ------------------------");
+      HELP_LOGGER.info("    ↓");
+      HELP_LOGGER.info("  ------------------------");
+      HELP_LOGGER.info("  item1,item8");
+      HELP_LOGGER.info("  001,1");
+      HELP_LOGGER.info("  ------------------------");
+      HELP_LOGGER.info("");
+      HELP_LOGGER.info("[Usage: updating-columns]");
+      HELP_LOGGER.info("  Updating value specified existing column using column-names and column-values.");
+      HELP_LOGGER.info("  e.g.) --command=updating-columns --dir=src/test/resources/data --files=xxx.csv,yyy.csv --column-names=item2,item9 --column-values='test2','NULL'");
+      HELP_LOGGER.info("  ------------------------");
+      HELP_LOGGER.info("  item1,item2,item8,item9");
+      HELP_LOGGER.info("  001,test,1,foo");
+      HELP_LOGGER.info("  ------------------------");
+      HELP_LOGGER.info("    ↓");
+      HELP_LOGGER.info("  ------------------------");
+      HELP_LOGGER.info("  item1,item2,item8,item9");
+      HELP_LOGGER.info("  001,test2,1,NULL");
+      HELP_LOGGER.info("  ------------------------");
+      HELP_LOGGER.info("");
+      HELP_LOGGER.info("[Usage: ordering-columns]");
+      HELP_LOGGER.info("  Ordering column specified order using column-names.");
+      HELP_LOGGER.info("  e.g.) --command=ordering-columns --dir=src/test/resources/data --files=xxx.csv,yyy.csv --column-names=item9,item8,item2,item1");
+      HELP_LOGGER.info("  ------------------------");
+      HELP_LOGGER.info("  item1,item2,item8,item9");
+      HELP_LOGGER.info("  001,test,1,foo");
+      HELP_LOGGER.info("  ------------------------");
+      HELP_LOGGER.info("    ↓");
+      HELP_LOGGER.info("  ------------------------");
+      HELP_LOGGER.info("  item9,item8,item2,item1");
+      HELP_LOGGER.info("  foo,1,test,001");
+      HELP_LOGGER.info("  ------------------------");
+      HELP_LOGGER.info("");
       return;
     }
     String command;
@@ -126,18 +126,18 @@ public class CsvBulkCommandsApplicationRunner implements ApplicationRunner {
         Charset.forName(args.getOptionValues("encoding").stream().findFirst().orElse(StandardCharsets.UTF_8.name())) :
         StandardCharsets.UTF_8;
 
-    logger.info("Start. command:{} dir:{} files:{} column-names:{} column-values:{} encoding:{}", command, dir, files, columnNames, columnValues, encoding);
+    LOGGER.info("Start. command:{} dir:{} files:{} column-names:{} column-values:{} encoding:{}", command, dir, files, columnNames, columnValues, encoding);
 
     Files.walk(Paths.get(dir))
         .filter(Files::isRegularFile)
         .filter(file -> files.stream().anyMatch(x -> file.toString().replace('\\', '/').endsWith(x)))
         .sorted().forEach(file -> execute(command, columnNames, columnValues, file, encoding));
 
-    logger.info("End.");
+    LOGGER.info("End.");
   }
 
   private void execute(String command, List<String> columnNames, List<String> columnValues, Path file, Charset encoding) {
-    logger.info("processing file:{}", file);
+    LOGGER.info("processing file:{}", file);
     switch (command) {
       case "adding-columns":
         AddingColumnProcessor.INSTANCE.execute(columnNames, columnValues, file, encoding);

@@ -2,6 +2,10 @@ package com.example.tools;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.expression.Expression;
+import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
@@ -14,25 +18,30 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class AddingColumnProcessor {
 
   static final AddingColumnProcessor INSTANCE = new AddingColumnProcessor();
+  private static final Logger LOGGER = LoggerFactory.getLogger(AddingColumnProcessor.class);
+  private static final ExpressionParser EXPRESSION_PARSER = new SpelExpressionParser();
 
   private AddingColumnProcessor() {
     // NOP
   }
 
-  private static final Logger logger = LoggerFactory.getLogger(AddingColumnProcessor.class);
-
   void execute(List<String> columnNames, List<String> columnValues, Path file, Charset encoding) {
     try {
       List<String> lines = Files.readAllLines(file, encoding);
       if (lines.isEmpty()) {
-        logger.warn("Skip adding because file is empty. file:{}", file);
+        LOGGER.warn("Skip adding because file is empty. file:{}", file);
         return;
       }
       List<String> headerColumns = new ArrayList<>(Arrays.asList(StringUtils.commaDelimitedListToStringArray(lines.remove(0))));
+      Map<String, Integer> headerIndexMap = new LinkedHashMap<>();
+      for (String column : headerColumns) {
+        headerIndexMap.put(column, headerIndexMap.size());
+      }
       Map<Integer, Boolean> containsColumnMap = new LinkedHashMap<>();
       for (String columnName : columnNames) {
         boolean contains = headerColumns.contains(columnName);
@@ -51,7 +60,12 @@ public class AddingColumnProcessor {
       saveLines.add(StringUtils.collectionToCommaDelimitedString(headerColumns));
       for (String line : lines) {
         List<String> valueColumns = new ArrayList<>(Arrays.asList(StringUtils.commaDelimitedListToStringArray(line)));
-        valueColumns.addAll(validColumnValues);
+        StandardEvaluationContext context = new StandardEvaluationContext();
+        headerIndexMap.forEach((name, index) -> context.setVariable(name, valueColumns.get(index)));
+        for (String value : validColumnValues) {
+          Expression expression = EXPRESSION_PARSER.parseExpression(value);
+          valueColumns.add(Objects.toString(expression.getValue(context)));
+        }
         saveLines.add(StringUtils.collectionToCommaDelimitedString(valueColumns));
       }
 

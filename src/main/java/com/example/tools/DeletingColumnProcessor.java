@@ -17,9 +17,8 @@ import java.util.Map;
 
 public class DeletingColumnProcessor {
 
-  private static final Logger logger = LoggerFactory.getLogger(DeletingColumnProcessor.class);
-
   static final DeletingColumnProcessor INSTANCE = new DeletingColumnProcessor();
+  private static final Logger LOGGER = LoggerFactory.getLogger(DeletingColumnProcessor.class);
 
   private DeletingColumnProcessor() {
     // NOP
@@ -29,7 +28,7 @@ public class DeletingColumnProcessor {
     try {
       List<String> lines = Files.readAllLines(file, encoding);
       if (lines.isEmpty()) {
-        logger.warn("Skip deleting because file is empty. file:{}", file);
+        LOGGER.warn("Skip deleting because file is empty. file:{}", file);
         return;
       }
       List<String> headerColumns = new ArrayList<>(Arrays.asList(StringUtils.commaDelimitedListToStringArray(lines.remove(0))));

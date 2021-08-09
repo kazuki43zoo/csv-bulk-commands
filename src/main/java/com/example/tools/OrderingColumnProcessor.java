@@ -15,9 +15,8 @@ import java.util.List;
 
 public class OrderingColumnProcessor {
 
-  private static final Logger logger = LoggerFactory.getLogger(OrderingColumnProcessor.class);
-
   static final OrderingColumnProcessor INSTANCE = new OrderingColumnProcessor();
+  private static final Logger LOGGER = LoggerFactory.getLogger(OrderingColumnProcessor.class);
 
   private OrderingColumnProcessor() {
     // NOP
@@ -27,20 +26,20 @@ public class OrderingColumnProcessor {
     try {
       List<String> lines = Files.readAllLines(file, encoding);
       if (lines.isEmpty()) {
-        logger.warn("Skip ordering because file is empty. file:{}", file);
+        LOGGER.warn("Skip ordering because file is empty. file:{}", file);
         return;
       }
       List<String> headerColumns = new ArrayList<>(Arrays.asList(StringUtils.commaDelimitedListToStringArray(lines.remove(0))));
       if (headerColumns.size() != columnNames.size()) {
-        logger.warn("Skip ordering because column size not same. before:{} after:{} before-columns:{} after-columns:{} file:{}", headerColumns.size(), columnNames.size(), headerColumns, columnNames, file);
+        LOGGER.warn("Skip ordering because column size not same. before:{} after:{} before-columns:{} after-columns:{} file:{}", headerColumns.size(), columnNames.size(), headerColumns, columnNames, file);
         return;
       }
       if (!headerColumns.containsAll(columnNames)) {
-        logger.warn("Skip ordering because columns not same. before-columns:{} after-columns:{} file:{}", headerColumns, columnNames, file);
+        LOGGER.warn("Skip ordering because columns not same. before-columns:{} after-columns:{} file:{}", headerColumns, columnNames, file);
         return;
       }
       if (headerColumns.equals(columnNames)) {
-        logger.info("Skip ordering because same ordering. file:{}", file);
+        LOGGER.info("Skip ordering because same ordering. file:{}", file);
         return;
       }
       List<Integer> columnIndexes = new ArrayList<>();

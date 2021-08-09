@@ -11,7 +11,7 @@ class CsvBulkCommandsApplicationRunnerTests {
 
   @Test
   void addingColumns() throws IOException {
-    String[] args = {"--command=adding-columns", "--files=aaa.csv,bbb.csv", "--column-names=x,y", "--column-values=NULL,NULL", "--dir=src/test/resources/data"};
+    String[] args = {"--command=adding-columns", "--files=aaa.csv,bbb.csv", "--column-names=x,y", "--column-values=100*0.1", "--dir=src/test/resources/data"};
     runner.run(new DefaultApplicationArguments(args));
   }
 
@@ -23,7 +23,7 @@ class CsvBulkCommandsApplicationRunnerTests {
 
   @Test
   void settingColumns() throws IOException {
-    String[] args = {"--command=updating-columns", "--files=aaa.csv,bbb.csv", "--column-names=y,x", "--column-values=NULL,CURRENT_TIMESTAMP", "--dir=src/test/resources/data"};
+    String[] args = {"--command=updating-columns", "--files=aaa.csv,bbb.csv", "--column-names=y,x", "--column-values='NULL','CURRENT_TIMESTAMP'", "--dir=src/test/resources/data"};
     runner.run(new DefaultApplicationArguments(args));
   }
 
