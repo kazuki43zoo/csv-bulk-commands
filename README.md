@@ -1,6 +1,9 @@
 # csv-bulk-commands
 
+
 ## How to run
+
+### Using Spring Boot Maven Plugin
 
 ```bash
 ./mvnw spring-boot:run -Dspring-boot.run.arguments=""
@@ -119,4 +122,14 @@
 [INFO] Total time:  4.956 s
 [INFO] Finished at: 2021-08-09T10:45:05+09:00
 [INFO] ------------------------------------------------------------------------
+```
+
+### Using standalone Java Application
+
+```bash
+$ ./mvnw clean verify -DskipTests
+```
+
+```
+$ java -jar target/csv-bulk-commands-0.0.1-SNAPSHOT.jar
 ```
