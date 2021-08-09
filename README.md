@@ -56,7 +56,7 @@
 2021-08-08 23:44:09.833  INFO 1139 --- [           main] HELP                                     :   --files         : target files for apply command
 2021-08-08 23:44:09.833  INFO 1139 --- [           main] HELP                                     :   --column-names  : list of column name
 2021-08-08 23:44:09.833  INFO 1139 --- [           main] HELP                                     :   --column-values : list of column value
-2021-08-08 23:44:09.833  INFO 1139 --- [           main] HELP                                     :    --encoding      : encoding for read/write file (default: UTF-8)
+2021-08-08 23:44:09.833  INFO 1139 --- [           main] HELP                                     :   --encoding      : encoding for read/write file (default: UTF-8)
 2021-08-08 23:44:09.833  INFO 1139 --- [           main] HELP                                     :   --h (--help)    : print help
 2021-08-08 23:44:09.833  INFO 1139 --- [           main] HELP                                     : 
 2021-08-08 23:44:09.833  INFO 1139 --- [           main] HELP                                     : [Usage: adding-columns]
