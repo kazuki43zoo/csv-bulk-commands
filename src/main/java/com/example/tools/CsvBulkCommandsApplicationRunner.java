@@ -30,8 +30,8 @@ public class CsvBulkCommandsApplicationRunner implements ApplicationRunner {
       HELP_LOGGER.info("");
       HELP_LOGGER.info("[Arguments]");
       HELP_LOGGER.info("  --command       : adding-columns, deleting-columns, updating-columns, ordering-columns");
-      HELP_LOGGER.info("  --dir           : target directory for apply command");
-      HELP_LOGGER.info("  --files         : target files for apply command");
+      HELP_LOGGER.info("  --dir           : target directory for apply command(can search target files on specified directory)");
+      HELP_LOGGER.info("  --files         : target files for apply command(can filter that ending with specified file name)");
       HELP_LOGGER.info("  --column-names  : list of column name");
       HELP_LOGGER.info("  --column-values : list of column value(can reference other column values using SpEL expression)");
       HELP_LOGGER.info("  --encoding      : encoding for read/write file (default: UTF-8)");
