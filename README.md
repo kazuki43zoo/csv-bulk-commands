@@ -54,8 +54,8 @@
 2021-08-09 10:45:05.584  INFO 2798 --- [           main] HELP                                     : 
 2021-08-09 10:45:05.584  INFO 2798 --- [           main] HELP                                     : [Arguments]
 2021-08-09 10:45:05.584  INFO 2798 --- [           main] HELP                                     :   --command       : adding-columns, deleting-columns, updating-columns, ordering-columns
-2021-08-09 10:45:05.584  INFO 2798 --- [           main] HELP                                     :   --dir           : target directory for apply command
-2021-08-09 10:45:05.584  INFO 2798 --- [           main] HELP                                     :   --files         : target files for apply command
+2021-08-09 10:45:05.584  INFO 2798 --- [           main] HELP                                     :   --dir           : target directory for apply command(can search target files on specified directory)
+2021-08-09 10:45:05.584  INFO 2798 --- [           main] HELP                                     :   --files         : target files for apply command(can filter that ending with specified file name)
 2021-08-09 10:45:05.584  INFO 2798 --- [           main] HELP                                     :   --column-names  : list of column name
 2021-08-09 10:45:05.585  INFO 2798 --- [           main] HELP                                     :   --column-values : list of column value(can reference other column values using SpEL expression)
 2021-08-09 10:45:05.585  INFO 2798 --- [           main] HELP                                     :   --encoding      : encoding for read/write file (default: UTF-8)
