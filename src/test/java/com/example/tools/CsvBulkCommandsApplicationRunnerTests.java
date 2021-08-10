@@ -22,7 +22,7 @@ class CsvBulkCommandsApplicationRunnerTests {
   }
 
   @Test
-  void settingColumns() throws IOException {
+  void updatingColumns() throws IOException {
     String[] args = {"--command=updating-columns", "--files=aaa.csv,bbb.csv", "--column-names=y,x", "--column-values='NULL','CURRENT_TIMESTAMP'", "--dir=src/test/resources/data"};
     runner.run(new DefaultApplicationArguments(args));
   }
