@@ -28,14 +28,21 @@ public class CsvBulkCommandsApplicationRunner implements ApplicationRunner {
     if (args.getSourceArgs().length == 0 || args.containsOption("h") || args.containsOption("help")) {
       System.out.println("");
       System.out.println("[Arguments]");
-      System.out.println("  --command       : adding-columns, deleting-columns, updating-columns, ordering-columns");
-      System.out.println("  --dir           : target directory for apply command(can search target files on specified directory)");
-      System.out.println("  --files         : target files for apply command(can filter that ending with specified file name)");
-      System.out.println("  --column-names  : list of column name");
-      System.out.println("  --column-values : list of column value(can reference other column values using SpEL expression)");
-      System.out.println("  --encoding      : encoding for read/write file (default: UTF-8)");
-      System.out.println("  --h (--help)    : print help");
-      System.out.println("");
+      System.out.println("  --command");
+      System.out.println("       adding-columns, deleting-columns, updating-columns, ordering-columns");
+      System.out.println("  --dir");
+      System.out.println("       target directory for apply command(can search target files on specified directory)");
+      System.out.println("  --files");
+      System.out.println("       target files for apply command(can filter that ending with specified file name)");
+      System.out.println("  --column-names");
+      System.out.println("       list of column name");
+      System.out.println("  --column-values");
+      System.out.println("       list of column value(can reference other column values using SpEL expression)");
+      System.out.println("  --encoding");
+      System.out.println("       encoding for read/write file (default: UTF-8)");
+      System.out.println("  --h (--help)");
+      System.out.println("       print help");
+      System.out.println();
       System.out.println("[Usage: adding-columns]");
       System.out.println("  Adding specified new column using column-names and column-values.");
       System.out.println("  e.g.) --command=adding-columns --dir=src/test/resources/data --files=xxx.csv,yyy.csv --column-names=item10,item11 --column-values=1,'NULL'");
@@ -48,7 +55,7 @@ public class CsvBulkCommandsApplicationRunner implements ApplicationRunner {
       System.out.println("  item1,item2,item10,item11");
       System.out.println("  001,test,1,NULL");
       System.out.println("  ------------------------");
-      System.out.println("");
+      System.out.println();
       System.out.println("[Usage: deleting-columns]");
       System.out.println("  Deleting specified existing column using column-names.");
       System.out.println("  e.g.) --command=deleting-columns --dir=src/test/resources/data --files=xxx.csv,yyy.csv --column-names=item2,item9");
@@ -61,7 +68,7 @@ public class CsvBulkCommandsApplicationRunner implements ApplicationRunner {
       System.out.println("  item1,item8");
       System.out.println("  001,1");
       System.out.println("  ------------------------");
-      System.out.println("");
+      System.out.println();
       System.out.println("[Usage: updating-columns]");
       System.out.println("  Updating value specified existing column using column-names and column-values.");
       System.out.println("  e.g.) --command=updating-columns --dir=src/test/resources/data --files=xxx.csv,yyy.csv --column-names=item2,item9 --column-values='test2','NULL'");
@@ -74,7 +81,7 @@ public class CsvBulkCommandsApplicationRunner implements ApplicationRunner {
       System.out.println("  item1,item2,item8,item9");
       System.out.println("  001,test2,1,NULL");
       System.out.println("  ------------------------");
-      System.out.println("");
+      System.out.println();
       System.out.println("[Usage: ordering-columns]");
       System.out.println("  Ordering column specified order using column-names.");
       System.out.println("  e.g.) --command=ordering-columns --dir=src/test/resources/data --files=xxx.csv,yyy.csv --column-names=item9,item8,item2,item1");
@@ -87,7 +94,7 @@ public class CsvBulkCommandsApplicationRunner implements ApplicationRunner {
       System.out.println("  item9,item8,item2,item1");
       System.out.println("  foo,1,test,001");
       System.out.println("  ------------------------");
-      System.out.println("");
+      System.out.println();
       return;
     }
     String command;

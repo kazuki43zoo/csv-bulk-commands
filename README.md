@@ -84,13 +84,20 @@ Search files that matches conditions specified by `--dir` and `--files`.
 2021-08-09 10:45:05.582  INFO 2798 --- [           main] c.e.tools.CsvBulkCommandsApplication     : Started CsvBulkCommandsApplication in 1.096 seconds (JVM running for 1.528)
 
 [Arguments]
-  --command       : adding-columns, deleting-columns, updating-columns, ordering-columns
-  --dir           : target directory for apply command(can search target files on specified directory)
-  --files         : target files for apply command(can filter that ending with specified file name)
-  --column-names  : list of column name
-  --column-values : list of column value(can reference other column values using SpEL expression)
-  --encoding      : encoding for read/write file (default: UTF-8)
-  --h (--help)    : print help
+  --command
+       adding-columns, deleting-columns, updating-columns, ordering-columns
+  --dir
+       target directory for apply command(can search target files on specified directory)
+  --files
+       target files for apply command(can filter that ending with specified file name)
+  --column-names
+       list of column name
+  --column-values
+       list of column value(can reference other column values using SpEL expression)
+  --encoding
+       encoding for read/write file (default: UTF-8)
+  --h (--help)
+       print help
 
 [Usage: adding-columns]
   Adding specified new column using column-names and column-values.
