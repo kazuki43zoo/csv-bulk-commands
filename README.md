@@ -165,5 +165,5 @@ $ ./mvnw clean verify -DskipTests
 ```
 
 ```
-$ java -jar target/csv-bulk-commands-0.0.1-SNAPSHOT.jar
+$ java -jar target/csv-bulk-commands.jar
 ```
