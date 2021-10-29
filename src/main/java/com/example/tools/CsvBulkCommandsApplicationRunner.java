@@ -2,8 +2,11 @@ package com.example.tools;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.config.YamlMapFactoryBean;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -15,6 +18,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -40,6 +44,16 @@ public class CsvBulkCommandsApplicationRunner implements ApplicationRunner {
       System.out.println("       list of column value(can reference other column values using SpEL expression)");
       System.out.println("  --encoding");
       System.out.println("       encoding for read/write file (default: UTF-8)");
+      System.out.println("  --value-mapping-files");
+      System.out.println("       mapping yaml files for value converting");
+      System.out.println("       can be accessed using an SpEL like as #_valueMappings[{value-name}][{value}] (e.g. --column-names=foo --column-values=#_valueMappings[foo][#foo]?:'0')");
+      System.out.println("       e.g.) value mapping yaml file");
+      System.out.println("       foo:");
+      System.out.println("         \"10\": \"1\"");
+      System.out.println("         \"20\": \"2\"");
+      System.out.println("       bar:");
+      System.out.println("         \"10\": \"2\"");
+      System.out.println("         \"20\": \"1\"");
       System.out.println("  --h (--help)");
       System.out.println("       print help");
       System.out.println();
@@ -132,27 +146,36 @@ public class CsvBulkCommandsApplicationRunner implements ApplicationRunner {
         Charset.forName(args.getOptionValues("encoding").stream().findFirst().orElse(StandardCharsets.UTF_8.name())) :
         StandardCharsets.UTF_8;
 
-    LOGGER.info("Start. command:{} dir:{} files:{} column-names:{} column-values:{} encoding:{}", command, dir, files, columnNames, columnValues, encoding);
+    final Map<String, Object> valueMappings;
+    if (args.containsOption("value-mapping-files")) {
+      YamlMapFactoryBean yamlMapFactoryBean = new YamlMapFactoryBean();
+      yamlMapFactoryBean.setResources(args.getOptionValues("value-mapping-files").stream().map(FileSystemResource::new).toArray(Resource[]::new));
+      valueMappings = yamlMapFactoryBean.getObject();
+    } else {
+      valueMappings = Collections.emptyMap();
+    }
+
+    LOGGER.info("Start. command:{} dir:{} files:{} column-names:{} column-values:{} encoding:{} value-mappings:{}", command, dir, files, columnNames, columnValues, encoding, valueMappings);
 
     Files.walk(Paths.get(dir))
         .filter(Files::isRegularFile)
         .filter(file -> files.stream().anyMatch(x -> file.toString().replace('\\', '/').endsWith(x)))
-        .sorted().forEach(file -> execute(command, columnNames, columnValues, file, encoding));
+        .sorted().forEach(file -> execute(command, columnNames, columnValues, file, encoding, valueMappings));
 
     LOGGER.info("End.");
   }
 
-  private void execute(String command, List<String> columnNames, List<String> columnValues, Path file, Charset encoding) {
+  private void execute(String command, List<String> columnNames, List<String> columnValues, Path file, Charset encoding, Map<String, Object> valueMappings) {
     LOGGER.info("processing file:{}", file);
     switch (command) {
       case "adding-columns":
-        AddingColumnProcessor.INSTANCE.execute(columnNames, columnValues, file, encoding);
+        AddingColumnProcessor.INSTANCE.execute(columnNames, columnValues, file, encoding, valueMappings);
         break;
       case "deleting-columns":
         DeletingColumnProcessor.INSTANCE.execute(columnNames, file, encoding);
         break;
       case "updating-columns":
-        UpdatingColumnProcessor.INSTANCE.execute(columnNames, columnValues, file, encoding);
+        UpdatingColumnProcessor.INSTANCE.execute(columnNames, columnValues, file, encoding, valueMappings);
         break;
       case "ordering-columns":
         OrderingColumnProcessor.INSTANCE.execute(columnNames, file, encoding);

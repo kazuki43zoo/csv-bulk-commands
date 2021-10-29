@@ -30,7 +30,7 @@ public class AddingColumnProcessor {
     // NOP
   }
 
-  void execute(List<String> columnNames, List<String> columnValues, Path file, Charset encoding) {
+  void execute(List<String> columnNames, List<String> columnValues, Path file, Charset encoding, Map<String, Object> valueMappings) {
     try {
       List<String> lines = Files.readAllLines(file, encoding);
       if (lines.isEmpty()) {
@@ -61,6 +61,7 @@ public class AddingColumnProcessor {
       for (String line : lines) {
         List<String> valueColumns = new ArrayList<>(Arrays.asList(StringUtils.commaDelimitedListToStringArray(line)));
         StandardEvaluationContext context = new StandardEvaluationContext();
+        context.setVariable("_valueMappings", valueMappings);
         headerIndexMap.forEach((name, index) -> context.setVariable(name, valueColumns.get(index)));
         for (String value : validColumnValues) {
           Expression expression = EXPRESSION_PARSER.parseExpression(value);

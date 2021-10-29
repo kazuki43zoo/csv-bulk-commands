@@ -41,7 +41,7 @@ Search files that matches conditions specified by `--dir` and `--files`.
 [INFO] Scanning for projects...
 [INFO] 
 [INFO] -------------------< com.example:csv-bulk-commands >--------------------
-[INFO] Building csv-bulk-commands 0.0.1-SNAPSHOT
+[INFO] Building csv-bulk-commands 0.0.2-SNAPSHOT
 [INFO] --------------------------------[ jar ]---------------------------------
 [INFO] 
 [INFO] >>> spring-boot-maven-plugin:2.5.3:run (default-cli) > test-compile @ csv-bulk-commands >>>
@@ -71,17 +71,6 @@ Search files that matches conditions specified by `--dir` and `--files`.
 [INFO] --- spring-boot-maven-plugin:2.5.3:run (default-cli) @ csv-bulk-commands ---
 [INFO] Attaching agents: []
 
-  .   ____          _            __ _ _
- /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
-( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
- \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
-  '  |____| .__|_| |_|_| |_\__, | / / / /
- =========|_|==============|___/=/_/_/_/
- :: Spring Boot ::                (v2.5.3)
-
-2021-08-09 10:45:04.946  INFO 2798 --- [           main] c.e.tools.CsvBulkCommandsApplication     : Starting CsvBulkCommandsApplication using Java 11.0.1 on xxx with PID 2798 (/Users/xxx/git-pub/csv-bulk-commands/target/classes started by xxx in /Users/xxx/git-pub/csv-bulk-commands)
-2021-08-09 10:45:04.949  INFO 2798 --- [           main] c.e.tools.CsvBulkCommandsApplication     : No active profile set, falling back to default profiles: default
-2021-08-09 10:45:05.582  INFO 2798 --- [           main] c.e.tools.CsvBulkCommandsApplication     : Started CsvBulkCommandsApplication in 1.096 seconds (JVM running for 1.528)
 
 [Arguments]
   --command
@@ -96,6 +85,16 @@ Search files that matches conditions specified by `--dir` and `--files`.
        list of column value(can reference other column values using SpEL expression)
   --encoding
        encoding for read/write file (default: UTF-8)
+  --value-mapping-files
+       mapping yaml files for value converting
+       can be accessed using an SpEL like as #_valueMappings[{value-name}][{value}] (e.g. --column-names=foo --column-values=#_valueMappings[foo][#foo]?:'0')
+       e.g.) value mapping yaml file
+       foo:
+         "10": "1"
+         "20": "2"
+       bar:
+         "10": "2"
+         "20": "1"
   --h (--help)
        print help
 
