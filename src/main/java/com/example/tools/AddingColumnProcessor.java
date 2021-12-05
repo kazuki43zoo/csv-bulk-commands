@@ -1,17 +1,13 @@
 package com.example.tools;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
-import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,24 +16,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class AddingColumnProcessor {
+public class AddingColumnProcessor extends AbstractColumnProcessor {
 
   static final AddingColumnProcessor INSTANCE = new AddingColumnProcessor();
-  private static final Logger LOGGER = LoggerFactory.getLogger(AddingColumnProcessor.class);
   private static final ExpressionParser EXPRESSION_PARSER = new SpelExpressionParser();
 
   private AddingColumnProcessor() {
     // NOP
   }
 
-  void execute(List<String> columnNames, List<String> columnValues, Path file, Charset encoding, Map<String, Object> valueMappings) {
+  void execute(List<String> columnNames, List<String> columnValues, Path file, Charset encoding, Map<String, Object> valueMappings, String delimiter, Boolean ignoreEscapedEnclosure) {
     try {
-      List<String> lines = Files.readAllLines(file, encoding);
-      if (lines.isEmpty()) {
-        LOGGER.warn("Skip adding because file is empty. file:{}", file);
+      final List<String> originalHeaderColumns = readHeaderColumns(file, encoding, delimiter);
+      if (originalHeaderColumns == null) {
+        logger.warn("Skip adding because file is empty. file:{}", file);
         return;
       }
-      List<String> headerColumns = new ArrayList<>(Arrays.asList(StringUtils.commaDelimitedListToStringArray(lines.remove(0))));
+      final List<String> headerColumns = new ArrayList<>(originalHeaderColumns);
       Map<String, Integer> headerIndexMap = new LinkedHashMap<>();
       for (String column : headerColumns) {
         headerIndexMap.put(column, headerIndexMap.size());
@@ -56,10 +51,11 @@ public class AddingColumnProcessor {
           validColumnValues.add(columnValues.get(entry.getKey()));
         }
       }
-      List<String> saveLines = new ArrayList<>();
-      saveLines.add(StringUtils.collectionToCommaDelimitedString(headerColumns));
-      for (String line : lines) {
-        List<String> valueColumns = new ArrayList<>(Arrays.asList(StringUtils.commaDelimitedListToStringArray(line)));
+      List<String[]> lines = readDataColumns(originalHeaderColumns.toArray(new String[0]), file, encoding, delimiter);
+      List<String[]> saveLines = new ArrayList<>();
+      saveLines.add(headerColumns.toArray(new String[0]));
+      for (String[] items : lines) {
+        List<String> valueColumns = new ArrayList<>(Arrays.asList(items));
         StandardEvaluationContext context = new StandardEvaluationContext();
         context.setVariable("_valueMappings", valueMappings);
         headerIndexMap.forEach((name, index) -> context.setVariable(name, valueColumns.get(index)));
@@ -67,12 +63,14 @@ public class AddingColumnProcessor {
           Expression expression = EXPRESSION_PARSER.parseExpression(value);
           valueColumns.add(Objects.toString(expression.getValue(context)));
         }
-        saveLines.add(StringUtils.collectionToCommaDelimitedString(valueColumns));
+        saveLines.add(valueColumns.toArray(new String[0]));
       }
-
-      Files.write(file, saveLines, encoding);
+      writeLines(saveLines, file, encoding, delimiter, ignoreEscapedEnclosure);
     } catch (IOException e) {
       throw new UncheckedIOException(e);
+    } catch (Exception e) {
+      throw new IllegalStateException(e);
     }
   }
+
 }

@@ -54,6 +54,10 @@ public class CsvBulkCommandsApplicationRunner implements ApplicationRunner {
       System.out.println("       bar:");
       System.out.println("         \"10\": \"2\"");
       System.out.println("         \"20\": \"1\"");
+      System.out.println("  --delimiter");
+      System.out.println("       delimiter character (default: \",\")");
+      System.out.println("  --ignore-escaped-enclosure");
+      System.out.println("       whether escape a enclosing character on writing (default: false)");
       System.out.println("  --h (--help)");
       System.out.println("       print help");
       System.out.println();
@@ -155,30 +159,38 @@ public class CsvBulkCommandsApplicationRunner implements ApplicationRunner {
       valueMappings = Collections.emptyMap();
     }
 
-    LOGGER.info("Start. command:{} dir:{} files:{} column-names:{} column-values:{} encoding:{} value-mappings:{}", command, dir, files, columnNames, columnValues, encoding, valueMappings);
+    String delimiter = args.containsOption("delimiter") ?
+        args.getOptionValues("delimiter").stream().findFirst().orElse(",") :
+        ",";
+
+    Boolean ignoreEscapedEnclosure = args.containsOption("ignore-escaped-enclosure") &&
+        Boolean.parseBoolean(args.getOptionValues("ignore-escaped-enclosure").stream().findFirst().orElse(null));
+
+    LOGGER.info("Start. command:{} dir:{} files:{} column-names:{} column-values:{} encoding:{} value-mappings:{} delimiter:{} ignore-escaped-enclosure:{}",
+        command, dir, files, columnNames, columnValues, encoding, valueMappings, delimiter, ignoreEscapedEnclosure);
 
     Files.walk(Paths.get(dir))
         .filter(Files::isRegularFile)
         .filter(file -> files.stream().anyMatch(x -> file.toString().replace('\\', '/').endsWith(x)))
-        .sorted().forEach(file -> execute(command, columnNames, columnValues, file, encoding, valueMappings));
+        .sorted().forEach(file -> execute(command, columnNames, columnValues, file, encoding, valueMappings, delimiter, ignoreEscapedEnclosure));
 
     LOGGER.info("End.");
   }
 
-  private void execute(String command, List<String> columnNames, List<String> columnValues, Path file, Charset encoding, Map<String, Object> valueMappings) {
+  private void execute(String command, List<String> columnNames, List<String> columnValues, Path file, Charset encoding, Map<String, Object> valueMappings, String delimiter, Boolean ignoreEscapedEnclosure) {
     LOGGER.info("processing file:{}", file);
     switch (command) {
       case "adding-columns":
-        AddingColumnProcessor.INSTANCE.execute(columnNames, columnValues, file, encoding, valueMappings);
+        AddingColumnProcessor.INSTANCE.execute(columnNames, columnValues, file, encoding, valueMappings, delimiter, ignoreEscapedEnclosure);
         break;
       case "deleting-columns":
-        DeletingColumnProcessor.INSTANCE.execute(columnNames, file, encoding);
+        DeletingColumnProcessor.INSTANCE.execute(columnNames, file, encoding, delimiter, ignoreEscapedEnclosure);
         break;
       case "updating-columns":
-        UpdatingColumnProcessor.INSTANCE.execute(columnNames, columnValues, file, encoding, valueMappings);
+        UpdatingColumnProcessor.INSTANCE.execute(columnNames, columnValues, file, encoding, valueMappings, delimiter, ignoreEscapedEnclosure);
         break;
       case "ordering-columns":
-        OrderingColumnProcessor.INSTANCE.execute(columnNames, file, encoding);
+        OrderingColumnProcessor.INSTANCE.execute(columnNames, file, encoding, delimiter, ignoreEscapedEnclosure);
         break;
       default:
         throw new UnsupportedOperationException(String.format("'%s' command not support. valid-commands:%s", command, "[adding-columns, deleting-columns, updating-columns, ordering-columns]"));

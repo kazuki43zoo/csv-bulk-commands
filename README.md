@@ -11,16 +11,18 @@ Support following features.
 * Updating columns by specified expression(fixed value or dynamic value)
 * Ordering columns by specified order
 
+## Related libraries document
+
+* [SpEL provided by Spring Framework](https://docs.spring.io/spring-framework/docs/current/reference/html/core.html#expressions)
+* [FlatFileItemReader/FlatFileItemWriter provided by Spring Batch](https://docs.spring.io/spring-batch/docs/current/reference/html/readersAndWriters.html#flatFiles)
+
 ## Support CSV file specifications
 
 * The first line is header
 * The Record separator is LF or CRLF (Writing separator is OS dependent character)
-* No support an enclosing character (no support include a comma and record separator in column value)
+* Support an enclosing character(`"`) (support include a record separator(`,`) in column value)
+* Support custom delimiter character(e.g. `\t`)
 * The default encoding is UTF-8 (can change an any encoding using command line argument)
-
-> **NOTE:**
-> 
-> Will have a plan to supporting various csv format at future.
 
 ## How to specify target files
 
@@ -95,6 +97,10 @@ Search files that matches conditions specified by `--dir` and `--files`.
        bar:
          "10": "2"
          "20": "1"
+  --delimiter
+       delimiter character (default: ",")
+  --ignore-escaped-enclosure
+       whether escape a enclosing character on writing (default: false)
   --h (--help)
        print help
 
@@ -165,4 +171,10 @@ $ ./mvnw clean verify -DskipTests
 
 ```
 $ java -jar target/csv-bulk-commands.jar
+```
+
+### How to specify Tab character on delimiter with bash
+
+```
+$ java -jar target/csv-bulk-commands.jar ... --delimiter=$'\t'
 ```

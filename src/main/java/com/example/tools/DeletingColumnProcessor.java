@@ -1,13 +1,8 @@
 package com.example.tools;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
-
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,23 +10,22 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class DeletingColumnProcessor {
+public class DeletingColumnProcessor extends AbstractColumnProcessor {
 
   static final DeletingColumnProcessor INSTANCE = new DeletingColumnProcessor();
-  private static final Logger LOGGER = LoggerFactory.getLogger(DeletingColumnProcessor.class);
 
   private DeletingColumnProcessor() {
     // NOP
   }
 
-  void execute(List<String> columnNames, Path file, Charset encoding) {
+  void execute(List<String> columnNames, Path file, Charset encoding, String delimiter, Boolean ignoreEscapedEnclosure) {
     try {
-      List<String> lines = Files.readAllLines(file, encoding);
-      if (lines.isEmpty()) {
-        LOGGER.warn("Skip deleting because file is empty. file:{}", file);
+      final List<String> originalHeaderColumns = readHeaderColumns(file, encoding, delimiter);
+      if (originalHeaderColumns == null) {
+        logger.warn("Skip deleting because file is empty. file:{}", file);
         return;
       }
-      List<String> headerColumns = new ArrayList<>(Arrays.asList(StringUtils.commaDelimitedListToStringArray(lines.remove(0))));
+      List<String> headerColumns = new ArrayList<>(originalHeaderColumns);
       Map<Integer, Boolean> containsColumnMap = new LinkedHashMap<>();
       for (String column : headerColumns) {
         containsColumnMap.put(containsColumnMap.size(), columnNames.contains(column));
@@ -42,23 +36,25 @@ public class DeletingColumnProcessor {
           validColumnNames.add(headerColumns.get(entry.getKey()));
         }
       }
-
-      List<String> saveLines = new ArrayList<>();
-      saveLines.add(StringUtils.collectionToCommaDelimitedString(validColumnNames));
-      for (String line : lines) {
-        List<String> valueColumns = new ArrayList<>(Arrays.asList(StringUtils.commaDelimitedListToStringArray(line)));
+      List<String[]> lines = readDataColumns(originalHeaderColumns.toArray(new String[0]), file, encoding, delimiter);
+      List<String[]> saveLines = new ArrayList<>();
+      saveLines.add(validColumnNames.toArray(new String[0]));
+      for (String[] items : lines) {
+        List<String> valueColumns = new ArrayList<>(Arrays.asList(items));
         List<String> validColumnValues = new ArrayList<>();
         for (Map.Entry<Integer, Boolean> entry : containsColumnMap.entrySet()) {
           if (!entry.getValue()) {
             validColumnValues.add(valueColumns.get(entry.getKey()));
           }
         }
-        saveLines.add(StringUtils.collectionToCommaDelimitedString(validColumnValues));
+        saveLines.add(validColumnValues.toArray(new String[0]));
       }
 
-      Files.write(file, saveLines, encoding);
+      writeLines(saveLines, file, encoding, delimiter, ignoreEscapedEnclosure);
     } catch (IOException e) {
       throw new UncheckedIOException(e);
+    } catch (Exception e) {
+      throw new IllegalStateException(e);
     }
   }
 }
