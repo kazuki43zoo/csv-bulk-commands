@@ -1,8 +1,6 @@
 package com.example.tools;
 
 import org.springframework.expression.Expression;
-import org.springframework.expression.ExpressionParser;
-import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 
 import java.io.IOException;
@@ -19,7 +17,6 @@ import java.util.Objects;
 public class UpdatingColumnProcessor extends AbstractColumnProcessor {
 
   static final UpdatingColumnProcessor INSTANCE = new UpdatingColumnProcessor();
-  private static final ExpressionParser EXPRESSION_PARSER = new SpelExpressionParser();
 
   private UpdatingColumnProcessor() {
     // NOP
@@ -54,7 +51,7 @@ public class UpdatingColumnProcessor extends AbstractColumnProcessor {
         context.setVariable("_valueMappings", valueMappings);
         headerIndexMap.forEach((name, index) -> context.setVariable(name, valueColumns.get(index)));
         for (Map.Entry<Integer, String> entry : columnIndexValueMap.entrySet()) {
-          Expression expression = EXPRESSION_PARSER.parseExpression(entry.getValue());
+          Expression expression = expressionParser.parseExpression(entry.getValue());
           valueColumns.set(entry.getKey(), Objects.toString(expression.getValue(context)));
         }
         saveLines.add(valueColumns.toArray(new String[0]));

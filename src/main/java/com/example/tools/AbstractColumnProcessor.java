@@ -13,6 +13,8 @@ import org.springframework.batch.item.file.transform.ExtractorLineAggregator;
 import org.springframework.batch.item.file.transform.FieldSet;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.util.StringUtils;
 
 import java.nio.charset.Charset;
@@ -26,6 +28,7 @@ import java.util.stream.Collectors;
 public abstract class AbstractColumnProcessor {
 
   protected final Logger logger = LoggerFactory.getLogger(getClass());
+  protected final ExpressionParser expressionParser = new SpelExpressionParser();
 
   protected List<String> readHeaderColumns(Path file, Charset encoding, String delimiter) throws Exception {
     List<String> headerColumns = new ArrayList<>();
