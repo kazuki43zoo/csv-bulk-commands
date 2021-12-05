@@ -100,7 +100,7 @@ Search files that matches conditions specified by `--dir` and `--files`.
   --delimiter
        delimiter character (default: ",")
   --ignore-escaped-enclosure
-       whether escape a enclosing character on writing (default: false)
+       whether ignore escape an enclosing character on writing (default: false)
   --h (--help)
        print help
 

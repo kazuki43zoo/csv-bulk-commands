@@ -57,7 +57,7 @@ public class CsvBulkCommandsApplicationRunner implements ApplicationRunner {
       System.out.println("  --delimiter");
       System.out.println("       delimiter character (default: \",\")");
       System.out.println("  --ignore-escaped-enclosure");
-      System.out.println("       whether escape a enclosing character on writing (default: false)");
+      System.out.println("       whether ignore escape an enclosing character on writing (default: false)");
       System.out.println("  --h (--help)");
       System.out.println("       print help");
       System.out.println();
