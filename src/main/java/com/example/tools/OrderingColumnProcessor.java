@@ -23,26 +23,24 @@ public class OrderingColumnProcessor extends AbstractColumnProcessor {
         logger.warn("Skip ordering because file is empty. file:{}", file);
         return;
       }
-      List<String> headerColumns = new ArrayList<>(originalHeaderColumns);
-      if (headerColumns.size() != columnNames.size()) {
-        logger.warn("Skip ordering because column size not same. before:{} after:{} before-columns:{} after-columns:{} file:{}", headerColumns.size(), columnNames.size(), headerColumns, columnNames, file);
+      if (!columnNames.containsAll(originalHeaderColumns)) {
+        logger.warn("Skip ordering because part of header columns are not included in ordering columns. header-columns:{} ordering-columns:{} file:{}",
+            originalHeaderColumns, columnNames, file);
         return;
       }
-      if (!headerColumns.containsAll(columnNames)) {
-        logger.warn("Skip ordering because columns not same. before-columns:{} after-columns:{} file:{}", headerColumns, columnNames, file);
-        return;
-      }
-      if (headerColumns.equals(columnNames)) {
+      List<String> targetColumnNames = new ArrayList<>(columnNames);
+      targetColumnNames.retainAll(originalHeaderColumns);
+      if (originalHeaderColumns.equals(targetColumnNames)) {
         logger.info("Skip ordering because same ordering. file:{}", file);
         return;
       }
       List<Integer> columnIndexes = new ArrayList<>();
-      for (String column : columnNames) {
-        columnIndexes.add(headerColumns.indexOf(column));
+      for (String column : targetColumnNames) {
+        columnIndexes.add(originalHeaderColumns.indexOf(column));
       }
       List<String[]> lines = readDataColumns(originalHeaderColumns.toArray(new String[0]), file, encoding, delimiter);
       List<String[]> saveLines = new ArrayList<>();
-      saveLines.add(columnNames.toArray(new String[0]));
+      saveLines.add(targetColumnNames.toArray(new String[0]));
       for (String[] items : lines) {
         List<String> valueColumns = new ArrayList<>(Arrays.asList(items));
         List<String> orderedColumnValues = new ArrayList<>();
