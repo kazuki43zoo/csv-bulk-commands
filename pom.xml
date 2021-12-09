@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.example</groupId>
     <artifactId>csv-bulk-commands</artifactId>
-    <version>0.0.4-SNAPSHOT</version>
+    <version>0.0.4</version>
     <name>csv-bulk-commands</name>
     <description>csv-bulk-commands</description>
     <properties>
