@@ -58,6 +58,10 @@ public class CsvBulkCommandsApplicationRunner implements ApplicationRunner {
       System.out.println("       delimiter character (default: \",\")");
       System.out.println("  --ignore-escaped-enclosure");
       System.out.println("       whether ignore escape an enclosing character on writing (default: false)");
+      System.out.println("  --first");
+      System.out.println("       indicate that adding column at first position");
+      System.out.println("  --after");
+      System.out.println("       indicate that adding column at after position");
       System.out.println("  --h (--help)");
       System.out.println("       print help");
       System.out.println();
@@ -72,6 +76,28 @@ public class CsvBulkCommandsApplicationRunner implements ApplicationRunner {
       System.out.println("  ------------------------");
       System.out.println("  item1,item2,item10,item11");
       System.out.println("  001,test,1,NULL");
+      System.out.println("  ------------------------");
+      System.out.println();
+      System.out.println("  e.g.) --command=adding-columns --dir=src/test/resources/data --files=xxx.csv,yyy.csv --column-names=item10,item11 --column-values=1,'NULL' --first");
+      System.out.println("  ------------------------");
+      System.out.println("  item1,item2");
+      System.out.println("  001,test");
+      System.out.println("  ------------------------");
+      System.out.println("    ↓");
+      System.out.println("  ------------------------");
+      System.out.println("  item10,item11,item1,item2");
+      System.out.println("  1,NULL,001,test");
+      System.out.println("  ------------------------");
+      System.out.println();
+      System.out.println("  e.g.) --command=adding-columns --dir=src/test/resources/data --files=xxx.csv,yyy.csv --column-names=item10,item11 --column-values=1,'NULL' --after=item1");
+      System.out.println("  ------------------------");
+      System.out.println("  item1,item2");
+      System.out.println("  001,test");
+      System.out.println("  ------------------------");
+      System.out.println("    ↓");
+      System.out.println("  ------------------------");
+      System.out.println("  item1,item10,item11,item2");
+      System.out.println("  001,1,NULL,test");
       System.out.println("  ------------------------");
       System.out.println();
       System.out.println("[Usage: deleting-columns]");
@@ -166,22 +192,38 @@ public class CsvBulkCommandsApplicationRunner implements ApplicationRunner {
     Boolean ignoreEscapedEnclosure = args.containsOption("ignore-escaped-enclosure") &&
         Boolean.parseBoolean(args.getOptionValues("ignore-escaped-enclosure").stream().findFirst().orElse(null));
 
-    LOGGER.info("Start. command:{} dir:{} files:{} column-names:{} column-values:{} encoding:{} value-mappings:{} delimiter:{} ignore-escaped-enclosure:{}",
-        command, dir, files, columnNames, columnValues, encoding, valueMappings, delimiter, ignoreEscapedEnclosure);
+    final String addingMethod;
+    final String addingTarget;
+    if (args.containsOption("first")) {
+      addingMethod = "first";
+      addingTarget = null;
+    } else if (args.containsOption("after")) {
+      addingMethod = "after";
+      addingTarget = args.getOptionValues("after").stream().findFirst().orElse(null);
+      if (addingTarget == null) {
+        throw new IllegalArgumentException("'after' is required.");
+      }
+    } else {
+      addingMethod = "last";
+      addingTarget = null;
+    }
+
+    LOGGER.info("Start. command:{} dir:{} files:{} column-names:{} column-values:{} encoding:{} value-mappings:{} delimiter:{} ignore-escaped-enclosure:{} adding-method:{} adding-target:{}",
+        command, dir, files, columnNames, columnValues, encoding, valueMappings, delimiter, ignoreEscapedEnclosure, addingMethod, addingTarget);
 
     Files.walk(Paths.get(dir))
         .filter(Files::isRegularFile)
         .filter(file -> files.stream().anyMatch(x -> file.toString().replace('\\', '/').endsWith(x)))
-        .sorted().forEach(file -> execute(command, columnNames, columnValues, file, encoding, valueMappings, delimiter, ignoreEscapedEnclosure));
+        .sorted().forEach(file -> execute(command, columnNames, columnValues, file, encoding, valueMappings, delimiter, ignoreEscapedEnclosure, addingMethod, addingTarget));
 
     LOGGER.info("End.");
   }
 
-  private void execute(String command, List<String> columnNames, List<String> columnValues, Path file, Charset encoding, Map<String, Object> valueMappings, String delimiter, Boolean ignoreEscapedEnclosure) {
+  private void execute(String command, List<String> columnNames, List<String> columnValues, Path file, Charset encoding, Map<String, Object> valueMappings, String delimiter, Boolean ignoreEscapedEnclosure, String addingMethod, String addingTarget) {
     LOGGER.info("processing file:{}", file);
     switch (command) {
       case "adding-columns":
-        AddingColumnProcessor.INSTANCE.execute(columnNames, columnValues, file, encoding, valueMappings, delimiter, ignoreEscapedEnclosure);
+        AddingColumnProcessor.INSTANCE.execute(addingMethod, addingTarget, columnNames, columnValues, file, encoding, valueMappings, delimiter, ignoreEscapedEnclosure);
         break;
       case "deleting-columns":
         DeletingColumnProcessor.INSTANCE.execute(columnNames, file, encoding, delimiter, ignoreEscapedEnclosure);

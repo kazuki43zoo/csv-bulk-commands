@@ -10,6 +10,7 @@ Support following features.
 * Deleting columns
 * Updating columns by specified expression(fixed value or dynamic value)
 * Ordering columns by specified order
+* Support adding column at any position
 
 ## Related libraries document
 
@@ -43,10 +44,10 @@ Search files that matches conditions specified by `--dir` and `--files`.
 [INFO] Scanning for projects...
 [INFO] 
 [INFO] -------------------< com.example:csv-bulk-commands >--------------------
-[INFO] Building csv-bulk-commands 0.0.2-SNAPSHOT
+[INFO] Building csv-bulk-commands 0.0.5-SNAPSHOT
 [INFO] --------------------------------[ jar ]---------------------------------
 [INFO] 
-[INFO] >>> spring-boot-maven-plugin:2.5.3:run (default-cli) > test-compile @ csv-bulk-commands >>>
+[INFO] >>> spring-boot-maven-plugin:2.6.4:run (default-cli) > test-compile @ csv-bulk-commands >>>
 [INFO] 
 [INFO] --- maven-resources-plugin:3.2.0:resources (default-resources) @ csv-bulk-commands ---
 [INFO] Using 'UTF-8' encoding to copy filtered resources.
@@ -55,24 +56,21 @@ Search files that matches conditions specified by `--dir` and `--files`.
 [INFO] Copying 0 resource
 [INFO] 
 [INFO] --- maven-compiler-plugin:3.8.1:compile (default-compile) @ csv-bulk-commands ---
-[INFO] Changes detected - recompiling the module!
-[INFO] Compiling 6 source files to /Users/xxx/git-pub/csv-bulk-commands/target/classes
+[INFO] Nothing to compile - all classes are up to date
 [INFO] 
 [INFO] --- maven-resources-plugin:3.2.0:testResources (default-testResources) @ csv-bulk-commands ---
 [INFO] Using 'UTF-8' encoding to copy filtered resources.
 [INFO] Using 'UTF-8' encoding to copy filtered properties files.
-[INFO] Copying 8 resources
+[INFO] Copying 14 resources
 [INFO] 
 [INFO] --- maven-compiler-plugin:3.8.1:testCompile (default-testCompile) @ csv-bulk-commands ---
-[INFO] Changes detected - recompiling the module!
-[INFO] Compiling 2 source files to /Users/xxx/git-pub/csv-bulk-commands/target/test-classes
+[INFO] Nothing to compile - all classes are up to date
 [INFO] 
-[INFO] <<< spring-boot-maven-plugin:2.5.3:run (default-cli) < test-compile @ csv-bulk-commands <<<
+[INFO] <<< spring-boot-maven-plugin:2.6.4:run (default-cli) < test-compile @ csv-bulk-commands <<<
 [INFO] 
 [INFO] 
-[INFO] --- spring-boot-maven-plugin:2.5.3:run (default-cli) @ csv-bulk-commands ---
+[INFO] --- spring-boot-maven-plugin:2.6.4:run (default-cli) @ csv-bulk-commands ---
 [INFO] Attaching agents: []
-
 
 [Arguments]
   --command
@@ -101,6 +99,10 @@ Search files that matches conditions specified by `--dir` and `--files`.
        delimiter character (default: ",")
   --ignore-escaped-enclosure
        whether ignore escape an enclosing character on writing (default: false)
+  --first
+       indicate that adding column at first position
+  --after
+       indicate that adding column at after position
   --h (--help)
        print help
 
@@ -115,6 +117,28 @@ Search files that matches conditions specified by `--dir` and `--files`.
   ------------------------
   item1,item2,item10,item11
   001,test,1,NULL
+  ------------------------
+
+  e.g.) --command=adding-columns --dir=src/test/resources/data --files=xxx.csv,yyy.csv --column-names=item10,item11 --column-values=1,'NULL' --first
+  ------------------------
+  item1,item2
+  001,test
+  ------------------------
+    ↓
+  ------------------------
+  item10,item11,item1,item2
+  1,NULL,001,test
+  ------------------------
+
+  e.g.) --command=adding-columns --dir=src/test/resources/data --files=xxx.csv,yyy.csv --column-names=item10,item11 --column-values=1,'NULL' --after=item1
+  ------------------------
+  item1,item2
+  001,test
+  ------------------------
+    ↓
+  ------------------------
+  item1,item10,item11,item2
+  001,1,NULL,test
   ------------------------
 
 [Usage: deleting-columns]
@@ -155,11 +179,12 @@ Search files that matches conditions specified by `--dir` and `--files`.
   item9,item8,item2,item1
   foo,1,test,001
   ------------------------
+
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time:  4.956 s
-[INFO] Finished at: 2021-08-09T10:45:05+09:00
+[INFO] Total time:  2.376 s
+[INFO] Finished at: 2022-02-27T12:44:55+09:00
 [INFO] ------------------------------------------------------------------------
 ```
 
